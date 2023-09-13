@@ -2,7 +2,8 @@
 Serializers for user API Views
 """
 from django.contrib.auth import get_user_model
-from rest_framework import serializers
+from rest_framework import serializers, authentication
+from django.utils.translation import gettext as _
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -23,9 +24,36 @@ class UserSerializer(serializers.ModelSerializer):
                 }
             }
         }
-
     # override the create function
     # validated_data is the data that has been validated and is correct from the Meta fields
+
     def create(self, validated_data):
         """Create a new user with encrypted password and return it"""
         return get_user_model().objects.create_user(**validated_data)
+
+
+class AuthTokenSerializer(serializers.Serializer):
+    """Serializer for the user authentication object"""
+    email = serializers.EmailField()
+    password = serializers.CharField(
+        style={
+            'input_type': 'password'
+        },
+        # avoid trimming white spaces
+        trim_whitespace=False
+    )
+
+    def validate(self, attrs):
+        """Validate and authenticate the user"""
+        email = attrs.get('email')
+        password = attrs.get('password')
+        user = authentication.authenticate(
+            request=self.context.get('request'),
+            username=email,
+            password=password
+        )
+        if not user:
+            msg = _('Unable to authenticate with provided credentials')
+            raise serializers.ValidationError(msg, code='authentication')
+        attrs['user'] = user
+        return attrs

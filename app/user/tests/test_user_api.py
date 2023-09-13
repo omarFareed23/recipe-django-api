@@ -29,7 +29,7 @@ class PublicUserApiTest(TestCase):
 
     def test_create_valid_user_success(self):
         """Test creating user with valid payload is successful"""
-        payload = self.__test_user_payload
+        payload = self.__test_user_payload.copy()
         res = self.client.post(self.__create_user_url, payload)
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         user = get_user_model().objects.get(email=payload['email'])
@@ -40,14 +40,14 @@ class PublicUserApiTest(TestCase):
 
     def test_user_with_exists_email_throw_error(self):
         """Test creating user with email already exists"""
-        payload = self.__test_user_payload
+        payload = self.__test_user_payload.copy()
         self.__create_user(**payload)
         res = self.client.post(self.__create_user_url, payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_password_too_short(self):
         """Test that password must be more than 8 characters"""
-        payload = self.__test_user_payload
+        payload = self.__test_user_payload.copy()
         payload['password'] = 'pw'
         res = self.client.post(self.__create_user_url, payload)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
@@ -59,7 +59,7 @@ class PublicUserApiTest(TestCase):
     def test_create_token_for_user(self):
         """Test that a token is created for the user"""
         self.__create_user(**self.__test_user_payload)
-        payload = self.__test_user_payload
+        payload = self.__test_user_payload.copy()
         payload.pop('name')
         res = self.client.post(self.__token_url, payload)
         self.assertIn('token', res.data)
@@ -68,11 +68,9 @@ class PublicUserApiTest(TestCase):
     def test_create_token_bad_credentials(self):
         """Test that token is not created if invalid credentials are given"""
         self.__create_user(**self.__test_user_payload)
-        payload = self.__test_user_payload
+        payload = self.__test_user_payload.copy()
         payload['password'] = 'wrongpass'
         payload.pop('name')
         res = self.client.post(self.__token_url, payload)
         self.assertNotIn('token', res.data)
         self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
-
-    
