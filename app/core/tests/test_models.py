@@ -28,4 +28,4 @@ class TestModel(TestCase):
         ]
         for email, expected_email in sample_emails:
             user = get_user_model().objects.create_user(email, 'test1234')
-            self.assertEqual(user.email, expected_email.lower())
+            self.assertEqual(user.email, expected_email)
