@@ -1,3 +1,29 @@
-from django.db import models  # noqa
+"""Database Moodels"""
+from django.db import models
+from django.contrib.auth.models import \
+    AbstractBaseUser, BaseUserManager, PermissionsMixin
 
-# Create your models here.
+
+class UserManager(BaseUserManager):
+    """Manager for user profiles"""
+    def create_user(self, email, password=None, **extra_fields):
+        """Create a new user"""
+        if not email:
+            raise ValueError('User must have an email address')
+        user = self.model(email=self.normalize_email(email), **extra_fields)
+        # encrypting the password
+        user.set_password(password)
+        # saving the user model
+        user.save(using=self._db)
+        return user
+class User(AbstractBaseUser, PermissionsMixin):
+    """custom user model"""
+    email = models.EmailField(max_length=255, unique=True)
+    name = models.CharField(max_length=255)
+    is_active = models.BooleanField(default=True)
+    is_staff = models.BooleanField(default=False)
+    # telling django that we are using email instead of username for authentication
+    USERNAME_FIELD='email'
+    objects = UserManager()
+
+
