@@ -13,12 +13,14 @@ class UserManager(BaseUserManager):
     )
 
     def __validate_email(self, email):
+        """Check if the email exist and valid"""
         if not email:
             raise ValueError('User must have an email address')
         if not self.__email_regex.fullmatch(email):
             raise ValueError('Email address is not valid')
 
     def __create_user(self, email, password=None, **extra_fields):
+        """Create and save a new user"""
         self.__validate_email(email)
         user = self.model(email=self.normalize_email(email), **extra_fields)
         # encrypting the password
@@ -34,6 +36,7 @@ class UserManager(BaseUserManager):
         return self.__create_user(email, password, **extra_fields)
 
     def create_superuser(self, email, password, **extra_fields):
+        """Create a new superuser"""
         extra_fields['is_superuser'] = True
         extra_fields['is_staff'] = True
         return self.__create_user(email, password, **extra_fields)

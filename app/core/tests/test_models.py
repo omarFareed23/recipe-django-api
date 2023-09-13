@@ -3,7 +3,6 @@ Models Testing
 """
 from django.test import TestCase
 from django.contrib.auth import get_user_model
-import sys
 
 
 class TestModel(TestCase):
