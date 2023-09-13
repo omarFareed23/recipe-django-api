@@ -17,6 +17,7 @@ class PublicUserApiTest(TestCase):
         'password': 'testpass',
         'name': 'Test User'
     }
+    __token_url = reverse('user:token')
 
     def __create_user(self, **params):
         """Helper function to create new user"""
@@ -54,3 +55,24 @@ class PublicUserApiTest(TestCase):
             email=payload['email']
         ).exists()
         self.assertFalse(user_exists)
+
+    def test_create_token_for_user(self):
+        """Test that a token is created for the user"""
+        self.__create_user(**self.__test_user_payload)
+        payload = self.__test_user_payload
+        payload.pop('name')
+        res = self.client.post(self.__token_url, payload)
+        self.assertIn('token', res.data)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+
+    def test_create_token_bad_credentials(self):
+        """Test that token is not created if invalid credentials are given"""
+        self.__create_user(**self.__test_user_payload)
+        payload = self.__test_user_payload
+        payload['password'] = 'wrongpass'
+        payload.pop('name')
+        res = self.client.post(self.__token_url, payload)
+        self.assertNotIn('token', res.data)
+        self.assertEqual(res.status_code, status.HTTP_400_BAD_REQUEST)
+
+    
