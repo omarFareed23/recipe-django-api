@@ -18,7 +18,7 @@ class PublicUserApiTest(TestCase):
         'name': 'Test User'
     }
 
-    def __create_user(**params):
+    def __create_user(self, **params):
         """Helper function to create new user"""
         return get_user_model().objects.create_user(**params)
 
