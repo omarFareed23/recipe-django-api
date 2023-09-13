@@ -16,14 +16,15 @@ class UserManager(BaseUserManager):
         # saving the user model
         user.save(using=self._db)
         return user
+
+
 class User(AbstractBaseUser, PermissionsMixin):
     """custom user model"""
     email = models.EmailField(max_length=255, unique=True)
     name = models.CharField(max_length=255)
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
-    # telling django that we are using email instead of username for authentication
-    USERNAME_FIELD='email'
+    # telling django that we are using email
+    # instead of username for authentication
+    USERNAME_FIELD = 'email'
     objects = UserManager()
-
-
