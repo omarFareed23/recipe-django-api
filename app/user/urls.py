@@ -1,7 +1,7 @@
 """
 URL Mapping
 """
-from django.urls import path, include
+from django.urls import path
 from user import views
 
 # reverse(user:create)

@@ -38,7 +38,7 @@ class UserAdmin(BaseUserAdmin):
             None,
             {
                 'classes': ('wide',),
-                # password1 and password2 have a predefined logic saved in django
+                # password1 and password2 have a predefined logic
                 'fields': ('email', 'password1',  'password2', 'name', 'is_active')
             }
         ),
