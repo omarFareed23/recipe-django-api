@@ -3,6 +3,7 @@ Models Testing
 """
 from django.test import TestCase
 from django.contrib.auth import get_user_model
+import sys
 
 
 class TestModel(TestCase):
@@ -32,6 +33,17 @@ class TestModel(TestCase):
 
     def test_new_user_without_email_raises_error(self):
         """Test creating user without email raises error"""
-        for email in [None, '', 'omar', 'nonemail@']:
+        with self.assertRaises(ValueError):
+            get_user_model().objects.create_user(None, 'test1234')
+
+    def test_new_user_with_invalid_email_raises_error(self):
+        wrong_emails = ['test', 'test@', 'test@e', '']
+        for wrong_email in wrong_emails:
             with self.assertRaises(ValueError):
-                get_user_model().objects.create_user(email, 'test1234')
+                get_user_model().objects.create_user(wrong_email, 'test1234')
+        valid_emails = ['ex1@e.com', 'ex2@fjs.com']
+        for valid_email in valid_emails:
+            try:
+                get_user_model().objects.create_user(valid_email, 'test1234')
+            except ValueError:
+                self.fail(f'Unexpected ValueError for {valid_email}')
