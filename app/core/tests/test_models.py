@@ -47,3 +47,12 @@ class TestModel(TestCase):
                 get_user_model().objects.create_user(valid_email, 'test1234')
             except ValueError:
                 self.fail(f'Unexpected ValueError for {valid_email}')
+
+    def test_create_superuser(self):
+        """Test creating a new superuser"""
+        user = get_user_model().objects.create_superuser(
+            'test@example.com',
+            'test1234'
+        )
+        self.assertTrue(user.is_superuser)
+        self.assertTrue(user.is_staff)
