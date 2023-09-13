@@ -1,7 +1,7 @@
 """
 Django command to wait for the database to be available
 """
-from typing import Any, Optional
+from typing import Any
 from django.core.management.base import BaseCommand
 from psycopg2 import OperationalError as Psycopg2OperationalError
 from django.db.utils import OperationalError
