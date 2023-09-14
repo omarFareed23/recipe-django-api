@@ -118,11 +118,11 @@ class PrivateRecipeApiTest(TestCase):
             'price': Decimal('5.00'),
             'description': 'Test Recipe Description',
             'link': 'http://test.com',
-            'user': self.user.id
         }
-        res = self.client.post(RECIPE_URL, payload.copy())
+        res = self.client.post(RECIPE_URL, payload)
         # import pdb; pdb.set_trace()
         self.assertEqual(res.status_code, status.HTTP_201_CREATED)
         recipe = Recipe.objects.get(id=res.data['id'])
-        self.assertEqual(payload['user'], recipe.user.id)
-        self.assertEqual(payload['title'], recipe.title)
+        for k, v in payload.items():
+            self.assertEqual(getattr(recipe, k), v)
+        self.assertEqual(recipe.user, self.user)
