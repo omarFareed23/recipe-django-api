@@ -2,12 +2,12 @@
 Views for recipe app
 """
 
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.permissions import IsAuthenticated
 
-from core.models import Recipe
-from recipe.serializers import RecipeSerializer, RecipeDetailSerializer
+from core.models import Recipe, Tag
+from recipe.serializers import RecipeSerializer, RecipeDetailSerializer, TagSerializer
 
 
 class RecipeView(viewsets.ModelViewSet):
@@ -32,3 +32,14 @@ class RecipeView(viewsets.ModelViewSet):
         """Create a new recipe"""
         # set the user to the authenticated user
         serializer.save(user=self.request.user)
+
+
+class TagView(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """Manage tags in the database"""
+    serializer_class = TagSerializer
+    queryset = Tag.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated,)
+
+    def get_queryset(self):
+        return self.queryset.filter(user=self.request.user).order_by('-name')

@@ -80,5 +80,8 @@ class Tag(models.Model):
     )
     name = models.CharField(max_length=255)
 
+    class Meta:
+        unique_together = ('user', 'name')
+
     def __str__(self):
         return self.name
