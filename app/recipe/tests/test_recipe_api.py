@@ -39,6 +39,23 @@ class PublicRecipeApiTest(TestCase):
         res = self.client.get(RECIPE_URL)
         self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
 
+    def test_create_recipe_invalid(self):
+        """Test creating a new recipe needs authentication"""
+        user = get_user_model().objects.create_user(
+            'test3@exam.com',
+            'pass1234'
+        )
+        payload = {
+            'title': 'Test Recipe',
+            'time_minutes': 10,
+            'price': Decimal('5.00'),
+            'description': 'Test Recipe Description',
+            'link': 'http://test.com',
+            'user': user.id
+        }
+        res = self.client.post(RECIPE_URL, payload.copy())
+        self.assertEqual(res.status_code, status.HTTP_401_UNAUTHORIZED)
+
 
 class PrivateRecipeApiTest(TestCase):
     """Test the recipe API (private)"""
@@ -78,3 +95,20 @@ class PrivateRecipeApiTest(TestCase):
         self.assertEqual(res.status_code, status.HTTP_200_OK)
         self.assertEqual(len(res.data), 1)
         self.assertEqual(res.data, serializer.data)
+
+    def test_create_receipe(self):
+        """Test creating a new recipe"""
+        payload = {
+            'title': 'Test Recipe',
+            'time_minutes': 10,
+            'price': Decimal('5.00'),
+            'description': 'Test Recipe Description',
+            'link': 'http://test.com',
+            'user': self.user.id
+        }
+        res = self.client.post(RECIPE_URL, payload.copy())
+        # import pdb; pdb.set_trace()
+        self.assertEqual(res.status_code, status.HTTP_201_CREATED)
+        recipe = Recipe.objects.get(id=res.data['id'])
+        self.assertEqual(payload['user'], recipe.user.id)
+        self.assertEqual(payload['title'], recipe.title)
