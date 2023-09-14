@@ -80,7 +80,7 @@ class TestModel(TestCase):
             'test@example.com',
             'pass1234'
         )
-        tag = models.Tags.objects.create(
+        tag = models.Tag.objects.create(
             user=user,
             name='Vegan'
         )
