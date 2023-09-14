@@ -179,3 +179,10 @@ class PrivateRecipeApiTest(TestCase):
         url = get_recipe_detail_url(recipe.id)
         res = self.client.patch(url, payload)
         self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_delete_reciepe(self):
+        """Test deleting a recipe"""
+        recipe = create_recipe(user=self.user)
+        url = get_recipe_detail_url(recipe.id)
+        res = self.client.delete(url)
+        self.assertEqual(res.status_code, status.HTTP_204_NO_CONTENT)
