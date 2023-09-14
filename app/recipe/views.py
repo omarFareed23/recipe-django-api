@@ -26,6 +26,9 @@ class RecipeView(viewsets.ModelViewSet):
             return RecipeSerializer
         return self.serializer_class
 
+    # this function is called every time you create an object
+    # Inside the create method, the perform_create method is called. 
     def perform_create(self, serializer):
         """Create a new recipe"""
+        # set the user to the authenticated user
         serializer.save(user=self.request.user)
