@@ -126,3 +126,56 @@ class PrivateRecipeApiTest(TestCase):
         for k, v in payload.items():
             self.assertEqual(getattr(recipe, k), v)
         self.assertEqual(recipe.user, self.user)
+
+    def test_update_recipe(self):
+        """Test updating a recipe"""
+        recipe = create_recipe(user=self.user)
+        payload = {
+            'title': 'Updated Title',
+            'time_minutes': 20,
+            'price': Decimal('10.00'),
+            'description': 'Updated Description',
+            'link': 'http://updated.com',
+        }
+        url = get_recipe_detail_url(recipe.id)
+        res = self.client.patch(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        recipe.refresh_from_db()
+        for k, v in payload.items():
+            self.assertEqual(getattr(recipe, k), v)
+
+    def test_update_reciepe(self):
+        """Test updating a recipe for only the owner"""
+        recipe = create_recipe(user=self.user)
+        payload = {
+            'title': 'Updated Title',
+            'time_minutes': 20,
+            'price': Decimal('10.00'),
+            'description': 'Updated Description',
+            'link': 'http://updated.com',
+        }
+        url = get_recipe_detail_url(recipe.id)
+        res = self.client.patch(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_200_OK)
+        recipe.refresh_from_db()
+        for k, v in payload.items():
+            self.assertEqual(getattr(recipe, k), v)
+
+    def test_update_for_only_the_owner(self):
+        """Test updating a recipe for only the owner"""
+        # import pdb; pdb.set_trace()
+        user2 = get_user_model().objects.create_user(
+            'test2@exampl.com',
+            'pass1234'
+        )
+        recipe = create_recipe(user=user2)
+        payload = {
+            'title': 'Updated Title',
+            'time_minutes': 20,
+            'price': Decimal('10.00'),
+            'description': 'Updated Description',
+            'link': 'http://updated.com',
+        }
+        url = get_recipe_detail_url(recipe.id)
+        res = self.client.patch(url, payload)
+        self.assertEqual(res.status_code, status.HTTP_404_NOT_FOUND)
