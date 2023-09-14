@@ -14,7 +14,7 @@ def create_tag(user, name=None):
     return Tag.objects.create(user=user, name=name)
 
 
-TAGS_URL = reverse('recipe:tag-list')
+TAGS_URL = reverse('tag:tag-list')
 
 
 class PublicTagTesting(TestCase):
