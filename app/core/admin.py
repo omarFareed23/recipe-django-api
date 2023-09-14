@@ -48,3 +48,4 @@ class UserAdmin(BaseUserAdmin):
 admin.site.register(models.User, UserAdmin)
 # if didn't pass the second argument, it will use the default admin which is Model.Recipe in this case
 admin.site.register(models.Recipe)
+admin.site.register(models.Tag)
